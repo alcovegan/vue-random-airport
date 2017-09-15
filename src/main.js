@@ -5,13 +5,19 @@ import AirportMap from '@/AirportMap.vue'
 import * as VueGoogleMaps from 'vue2-google-maps'
 import airports from '../airports';
 
+const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+
 const getRandomAirport = () => {
-	const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 	const randomNum = getRandomInt(0, 569);
 	const randomAirport = airports[randomNum];
 
 	return randomAirport
 };
+
+const getRandomNumber = () => getRandomInt(0, 569);
+
+Vue.prototype.getRandomAirport = getRandomAirport;
+Vue.prototype.getRandomNumber = getRandomNumber;
 
 Vue.use(VueGoogleMaps, {
 	load: {

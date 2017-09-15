@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var fallback = require('express-history-api-fallback')
 
 var mongoose = require('mongoose');
 mongoose.connect('localhost/avia');
@@ -19,6 +20,7 @@ var airport = require('./routes/airport');
 
 var app = express();
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -31,6 +33,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(fallback(__dirname + '/public/index.html'))
 
 app.use('/', routes);
 app.use('/airport', cors({origin: false}), airport);
