@@ -81,7 +81,7 @@ export default {
 		},
 		getAirport: function() {
 			const airportCode = this.$router.history.current.params.code;
-			console.log('airportCode', airportCode);
+			// console.log('airportCode', airportCode);
 
 			const airport = airports.filter(ap => ap.code === airportCode)
 
@@ -98,28 +98,32 @@ export default {
 		// this.getRandomAirport();
 
 
+
 		EventBus.$on('random-airport', () => {
+			// console.log('random emitted');
 			// this.getRandomAirport();
 			const newAirport = this.getRandomAirport();
-			console.log(newAirport);
+			// console.log(newAirport);
 			// console.log('this.$router', this.$router.history.current.params.code);
 			this.$router.push({ name: 'airport', params: { code: newAirport.code }})
+
 			this.getAirport()
 			// console.log(this.getAirport());
 		});
 
-		EventBus.$on('current-airport', (code) => {
-			console.log('getCurrentAirport emitted', code);
-			// this.getRandomAirport();
-			// console.log('this.$router', this.$router.history.current.params.code);
-			const currentAirport = airports.filter(ap => ap.code === code)
-			this.$router.push({ name: 'airport', params: { code: currentAirport[0].code }})
-			this.getAirport()
-			// console.log(this.getAirport());
-		});
+		this.getAirport()
+		// EventBus.$on('current-airport', (code) => {
+		// 	console.log('getCurrentAirport emitted', code);
+		// 	// this.getRandomAirport();
+		// 	// console.log('this.$router', this.$router.history.current.params.code);
+		// 	const currentAirport = airports.filter(ap => ap.code === code)
+		// 	this.$router.push({ name: 'airport', params: { code: currentAirport[0].code }})
+		// 	this.getAirport()
+		// 	// console.log(this.getAirport());
+		// });
 	},
 	mounted () {
-		console.log('AirportMap route', this.$route);
+		// console.log('AirportMap route', this.$route);
 	}
 	// watch: {
 	// 	'iata': function(newVal, oldVal) {

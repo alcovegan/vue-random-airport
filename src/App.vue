@@ -20,25 +20,34 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
     }
   },
   methods: {
     getCurrentAirport() {
       EventBus.$emit('current-airport', this.$route.params.code)
     },
-    getRandomAirport: function() {
-      EventBus.$emit('random-airport', 0);
+    getRandomAirport: function(path) {
+      // console.log('emitting random', path);
+      EventBus.$emit('random-airport', path);
     }
   },
   created () {
-    console.log('App route', this.$route);
+    console.log('App route', this.$route.params.code);
+    console.log('global getAirport', this.$getAirport);
+    console.log('global getAirport', this.getAirport);
 
-    if(this.$route.params !== undefined) {
-      this.getCurrentAirport()
+    if(this.$route.path === "/") {
+      // console.log('route is slash');
+      this.getRandomAirport('root')
     } else {
-      this.getRandomAirport()
+      this.getRandomAirport('airport')
     }
+
+    // if(this.$route.params !== undefined) {
+    //   this.getCurrentAirport()
+    // } else {
+    //   this.getRandomAirport()
+    // }
   }
 }
 </script>

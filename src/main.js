@@ -2,7 +2,16 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from '@/App.vue'
 import AirportMap from '@/AirportMap.vue'
-import * as VueGoogleMaps from 'vue2-google-maps';
+import * as VueGoogleMaps from 'vue2-google-maps'
+import airports from '../airports';
+
+const getRandomAirport = () => {
+	const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+	const randomNum = getRandomInt(0, 569);
+	const randomAirport = airports[randomNum];
+
+	return randomAirport
+};
 
 Vue.use(VueGoogleMaps, {
 	load: {
@@ -13,7 +22,17 @@ Vue.use(VueGoogleMaps, {
 Vue.use(VueRouter)
 
 const routes = [
-	{ path: '/', component: App },
+	{
+		path: '/',
+		component: App,
+		beforeEnter: (to, from, next) => {
+			if(from.path === '/') {
+				const randomAirport = getRandomAirport();
+				router.push({ name: 'airport', params: { code: randomAirport.code }})
+				next();
+			}
+		}
+	},
 	{ path: '/airport/:code', name: 'airport', component: AirportMap }
 ]
 
@@ -22,11 +41,13 @@ const router = new VueRouter({
 	routes
 })
 
-router.beforeEach((to, from, next) => {
-	console.log('from', from)
-	console.log('to', to)
-	next();
-});
+// router.beforeEach((to, from, next) => {
+// 	console.log('from', from)
+// 	console.log('to', to)
+
+
+// 	next();
+// });
 
 new Vue({
   el: '#app',
