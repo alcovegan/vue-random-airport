@@ -24,8 +24,20 @@ export default {
     }
   },
   methods: {
+    getCurrentAirport() {
+      EventBus.$emit('current-airport', this.$route.params.code)
+    },
     getRandomAirport: function() {
-      EventBus.$emit('random-aiport', 0);
+      EventBus.$emit('random-airport', 0);
+    }
+  },
+  created () {
+    console.log('App route', this.$route);
+
+    if(this.$route.params !== undefined) {
+      this.getCurrentAirport()
+    } else {
+      this.getRandomAirport()
     }
   }
 }

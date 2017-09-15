@@ -40,26 +40,27 @@ export default {
 	    country: '',
 	    city: '',
 	    iata: '',
-	    website: '',
-	    isClickedRandom: false
+	    website: ''
 	  }
 	},
 	methods: {
 		getRandomAirport: function() {
 			const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
-			const randomAirport = airports[getRandomInt(0, 569)];
+			const randomNum = getRandomInt(0, 569);
+			const randomAirport = airports[randomNum];
 
-			this.center = randomAirport.coordinates;
-			this.name = randomAirport.name;
-			// this.name = ap.name_translations.ru || ap.name || ap.name_translations.en || ap.name_translations.ru || ap.apinfo_airport_name_rus || ap.apinfo_airport_name_eng
-			this.country = randomAirport.country.name.en;
-			// this.country = ap.apinfo_country_rus || ap.apinfo_country_eng
-			this.iata = randomAirport.code;
-			// this.iata = ap.code || ap.tutu_airport_iata_code || ap.apinfo_airport_iata_code
-			this.city = randomAirport.city.name.en;
-			// this.city = ap.apinfo_city_rus || ap.tutu_city_rus || ap.apinfo_city_eng
-			this.website = randomAirport.contacts.website;
-			// this.website = ap.apinfo_website || ap.ai_airport_offsite
+			return randomAirport
+			// this.center = randomAirport.coordinates;
+			// this.name = randomAirport.name;
+			// // this.name = ap.name_translations.ru || ap.name || ap.name_translations.en || ap.name_translations.ru || ap.apinfo_airport_name_rus || ap.apinfo_airport_name_eng
+			// this.country = randomAirport.country.name.en;
+			// // this.country = ap.apinfo_country_rus || ap.apinfo_country_eng
+			// this.iata = randomAirport.code;
+			// // this.iata = ap.code || ap.tutu_airport_iata_code || ap.apinfo_airport_iata_code
+			// this.city = randomAirport.city.name.en;
+			// // this.city = ap.apinfo_city_rus || ap.tutu_city_rus || ap.apinfo_city_eng
+			// this.website = randomAirport.contacts.website;
+			// // this.website = ap.apinfo_website || ap.ai_airport_offsite
 
 
 			// axios.get('http://localhost:3001/airport')
@@ -79,22 +80,52 @@ export default {
 			// 	})
 		},
 		getAirport: function() {
-			// const airport = airports[]
+			const airportCode = this.$router.history.current.params.code;
+			console.log('airportCode', airportCode);
+
+			const airport = airports.filter(ap => ap.code === airportCode)
+
+			this.center = airport[0].coordinates;
+			this.name = airport[0].name;
+			this.country = airport[0].country.name.en;
+			this.iata = airport[0].code;
+			this.city = airport[0].city.name.en;
+			this.website = airport[0].contacts.website;
+
 		}
 	},
 	created: function() {
 		// this.getRandomAirport();
-		EventBus.$on('random-aiport', () => {
-			this.isClickedRandom = true;
-			this.getRandomAirport();
-			this.isClickedRandom = false;
+
+
+		EventBus.$on('random-airport', () => {
+			// this.getRandomAirport();
+			const newAirport = this.getRandomAirport();
+			console.log(newAirport);
+			// console.log('this.$router', this.$router.history.current.params.code);
+			this.$router.push({ name: 'airport', params: { code: newAirport.code }})
+			this.getAirport()
+			// console.log(this.getAirport());
+		});
+
+		EventBus.$on('current-airport', (code) => {
+			console.log('getCurrentAirport emitted', code);
+			// this.getRandomAirport();
+			// console.log('this.$router', this.$router.history.current.params.code);
+			const currentAirport = airports.filter(ap => ap.code === code)
+			this.$router.push({ name: 'airport', params: { code: currentAirport[0].code }})
+			this.getAirport()
+			// console.log(this.getAirport());
 		});
 	},
-	watch: {
-		'iata': function(newVal, oldVal) {
-			this.$router.push({ name: 'airport', params: { code: newVal }})
-		}
+	mounted () {
+		console.log('AirportMap route', this.$route);
 	}
+	// watch: {
+	// 	'iata': function(newVal, oldVal) {
+	// 		this.$router.push({ name: 'airport', params: { code: newVal }})
+	// 	}
+	// }
 }
 
 </script>
