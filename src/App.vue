@@ -1,11 +1,6 @@
 <template>
   <div id="app">
     <google-maps></google-maps>
-    <div class="get-random-airport" @click="getRandomAirport">
-      <div class="get-random-aiport__text">
-        Get Random Airport!
-      </div>
-    </div>
   </div>
 </template>
 
@@ -64,38 +59,4 @@ li {
 a {
   color: #42b983;
 }
-
-.get-random-airport {
-  cursor: pointer;
-  position: absolute;
-  top: 50px;
-  right: 20px;
-  background: #FFF;
-  z-index: 9999;
-  display: block;
-  height: 50px;
-  width: 150px;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 3px solid blue;
-  transition: background 0.3s ease;
-}
-
-.get-random-airport:hover {
-  color: #FFF;
-  background: blue;
-  transition: background 0.3s ease;
-}
-
-.get-random-airport:active {
-  color: #000;
-  background: #FFF;
-}
-
-.get-random-airport__text {
-  font-weight: bold;
-}
-
 </style>
