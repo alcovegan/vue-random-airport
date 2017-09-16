@@ -4,6 +4,9 @@ import App from '@/App.vue'
 import AirportMap from '@/AirportMap.vue'
 import * as VueGoogleMaps from 'vue2-google-maps'
 import airports from '../airports';
+import InstantSearch from 'vue-instantsearch';
+
+Vue.use(InstantSearch);
 
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
