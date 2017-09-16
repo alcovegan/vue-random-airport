@@ -28,7 +28,7 @@ export default {
     }
   },
   created () {
-    this.getRandomAirport()
+    // this.getRandomAirport()
   }
 }
 </script>

@@ -1,34 +1,33 @@
 <template>
 	<div>
 	<div class="airport">
+		<div class="airport__language">
+			<span @click="changeLanguage('ru')" class="airport__language-selector">RU</span>
+			<span @click="changeLanguage('en')" class="airport__language-selector">EN</span>
+
+			<span @click="randomAirport" class="airport__language-selector">RANDOM</span>
+		</div>
 		<div class="airport__info">
 			<span class="airport__info-header">Информация об аэропорте:</span>
 			<ul class="airport__info-list">
-				<li><b>Название</b>: {{ name }}</li>
-				<li><b>Страна</b>: {{ country }}</li>
-				<li><b>Город</b>: {{ city }}</li>
-				<li><b>IATA-код аэропорта:</b> {{ iata }}</li>
-				<li v-if="website"><b>Сайт:</b> <a :href="website">{{ website }}</a></li>
+				<li><b>{{ i18n[language].name }}</b>: {{ name }}</li>
+				<li><b>{{ i18n[language].country }}</b>: {{ country }}</li>
+				<li><b>{{ i18n[language].city }}</b>: {{ city }}</li>
+				<li><b>{{ i18n[language].iata }}:</b> {{ iata }}</li>
+				<li v-if="website"><b>{{ i18n[language].website }}:</b> <a :href="website">{{ website }}</a></li>
 			</ul>
 		</div>
 		<div class="airport__search">
-			<span class="airport__search-header">Поиск аэропорта:</span>
-			<ais-index
-			app-id="V9099CTTHC"
-			api-key="55c4551b67080a4dd0da7192c1930f23"
-			index-name="large_airports"
-			:auto-search="false"
-			>
-			<ais-search-box></ais-search-box>
-			<ais-results>
-			  <template scope="{ result }">
-			    <h2 @click="searchResultClicked(result)">
-			      <ais-highlight :result="result" attribute-name="name"></ais-highlight>
-			    </h2>
-			  </template>
-			</ais-results>
-			<!-- <ais-clear :clear-query="false"></ais-clear> -->
-			</ais-index>
+			<div class="airport__search-header">{{ i18n[language].search }}:</div>
+			<input class="airport__search-input" type="text" @input="findAirport" v-model="airportQuery">
+
+			<div class="airport__search-results">
+				<ul class="airport__search-list">
+					<li class="airport__search-list-item" v-for="airport in airportResults" @click="searchResultClicked(airport.code)">
+						{{ airport.name }} - <span style="text-decoration: underline;">{{ airport.code }}</span>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</div>
 	<gmap-map
@@ -49,12 +48,33 @@ import airports from '../airports'
 export default {
 	data () {
 	  return {
+	  	airportQuery: null,
+	  	airportResults: [],
 	    center: {},
 	    name: '',
 	    country: '',
 	    city: '',
 	    iata: '',
-	    website: ''
+	    website: '',
+	    language: 'en',
+	    i18n: {
+	    	"ru": {
+	    		"name": "Название аэропорта",
+	    		"country": "Страна",
+	    		"city": "Город",
+	    		"iata": "IATA-код аэропорта",
+	    		"website": "Сайт",
+	    		"search": "Поиск аэропорта"
+	    	},
+	    	"en": {
+	    		"name": "Airport name",
+	    		"country": "Country",
+	    		"city": "City",
+	    		"iata": "Airport IATA-code",
+	    		"website": "Website",
+	    		"search": "Airport search"
+	    	}
+	    }
 	  }
 	},
 	methods: {
@@ -69,9 +89,28 @@ export default {
 			this.city = airport[0].city.name.en;
 			this.website = airport[0].contacts.website;
 		},
-		searchResultClicked: function(result) {
-			this.$router.push({ name: 'airport', params: { code: result.code }})
+		searchResultClicked: function(code) {
+			this.airportQuery = '';
+			this.airportResults = [];
+			this.$router.push({ name: 'airport', params: { code: code }})
 			this.getAirport();
+		},
+		findAirport: function() {
+			this.airportResults = airports.filter(airport => {
+				if(this.airportQuery === '') {
+					return false
+				}
+				return airport.code.startsWith(this.airportQuery.toUpperCase())
+			})
+		},
+		changeLanguage: function(langCode) {
+			console.log(langCode);
+			this.language = langCode
+		},
+		randomAirport: function() {
+			const newAirport = this.getRandomAirport();
+			this.$router.push({ name: 'airport', params: { code: newAirport.code }})
+			this.getAirport()
 		}
 	},
 	created: function() {
@@ -135,6 +174,36 @@ export default {
 
 	.ais-results {
 		background: #FFF;
+	}
+
+	.airport__search-header {
+		margin-bottom: 5px;
+	}
+
+	.airport__search-input {
+		border: 2px solid #F2F2F2;
+		font-size: 36px;
+		height: 36px;
+	}
+
+	.airport__search-input:focus {
+		background: #F2F2F2;
+	}
+
+	.airport__search-list {
+
+	}
+
+	.airport__search-list-item {
+		display: block;
+		margin-left: 0;
+		padding: 10px 10px;
+		border-bottom: 1px solid #F2F2F2;
+		cursor: pointer;
+	}
+
+	.airport__search-list-item:hover {
+		background: #F2F2F2;
 	}
 
 </style>
