@@ -169,6 +169,14 @@ export default {
 					return airport
 				}
 			})
+
+			if(this.airportResults.length <= 1) {
+				this.currentSelectedSuggestion = 0
+			}
+
+			// if(this.currentSelectedSuggestion > this.airportResults - 1) {
+			// 	return this.currentSelectedSuggestion = this.airportResults - 1
+			// }
 		},
 		changeLanguage: function(langCode) {
 			console.log(langCode);
@@ -196,11 +204,16 @@ export default {
 		keyDown: function() {
 	        if(this.currentSelectedSuggestion < this.airportResults.length - 1) {
 	        	this.currentSelectedSuggestion++;
+	        } else {
+	        	this.currentSelectedSuggestion = 0
 	        }
 		},
 		keyUp: function() {
-	        if(this.currentSelectedSuggestion > 0)
-	            this.currentSelectedSuggestion--;
+	        if(this.currentSelectedSuggestion > 0) {
+	        	this.currentSelectedSuggestion--;
+	        } else {
+	        	this.currentSelectedSuggestion = this.airportResults.length - 1
+	        }
 		},
 		keyEnter: function() {
 			const selectedCode = this.airportResults[this.currentSelectedSuggestion].code;
