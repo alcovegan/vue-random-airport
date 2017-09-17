@@ -11,6 +11,9 @@
 				<div @click="changeLanguage('ru')" class="airport__language-selector" :class="{ 'airport__language-selector--selected': selectedLanguage('ru') }">RU</div>
 				<div @click="changeLanguage('en')" class="airport__language-selector" :class="{ 'airport__language-selector--selected': selectedLanguage('en') }">EN</div>
 			</div>
+			<div class="airport__search-toggle" :class="{ 'airport__search-toggle--active': isSearchActive }" @click="toggleSearch">
+				{{ i18n[language].search }}
+			</div>
 			<div class="airport__info">
 				<div class="airport__info-header">{{ i18n[language].informationHeader }}:</div>
 				<ul class="airport__info-list">
@@ -31,23 +34,25 @@
 					<li v-if="airportInfo.base_airlines.length > 0"><b>{{ i18n[language].baseAirlines }}:</b> {{ baseAirlines }}</a></li>
 				</ul>
 			</div>
-			<div class="airport__search">
-				<div class="airport__search-header">{{ i18n[language].searchHeader }}:</div>
-				<input class="airport__search-input" type="text" @input="findAirport" @keyup.down="keyDown" @keyup.up="keyUp" @keyup.enter="keyEnter" v-model="airportQuery">
-
-				<div class="airport__search-results">
-					<ul class="airport__search-list">
-						<li class="airport__search-list-item" v-for="(airport, index) in airportResults" @click="searchResultClicked(airport.code)" :class="{'airport__search-list-item--active': isActive(index)}">
-							{{ searchResults(airport) }} - <span style="text-decoration: underline;">{{ airport.code }}</span>
-						</li>
-					</ul>
-				</div>
-			</div>
 		</div>
 		<div class="airport__toggle" @click="toggleBlockSize">
 			<a class="airport__toggle-switch">
 				{{ toggleButtonText }}
 			</a>
+		</div>
+	</div>
+	<div class="airport__search" :class="{ 'airport__search--active': isSearchActive }">
+		<div class="airport__search-wrapper">
+			<div class="airport__search-header">{{ i18n[language].searchHeader }}:</div>
+			<input class="airport__search-input" type="text" @input="findAirport" @keyup.down="keyDown" @keyup.up="keyUp" @keyup.enter="keyEnter" v-model="airportQuery">
+
+			<div class="airport__search-results">
+				<ul class="airport__search-list">
+					<li class="airport__search-list-item" v-for="(airport, index) in airportResults" @click="searchResultClicked(airport.code)" :class="{'airport__search-list-item--active': isActive(index)}">
+						{{ searchResults(airport) }} - <span style="text-decoration: underline;">{{ airport.code }}</span>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</div>
 	<gmap-map
@@ -100,7 +105,8 @@ export default {
 				"fax": "Факс",
 				"baseAirlines": "Базовые авиалинии",
 				"toggleButtonReduce": "Свернуть",
-				"toggleButtonExtend": "Развернуть"
+				"toggleButtonExtend": "Развернуть",
+				"search": "Поиск"
 	    	},
 	    	"en": {
 	    		"randomButton": "Get random airport!",
@@ -122,10 +128,12 @@ export default {
 				"fax": "Fax",
 				"baseAirlines": "Base airlines",
 				"toggleButtonReduce": "Reduce size",
-				"toggleButtonExtend": "Extend"
+				"toggleButtonExtend": "Extend",
+				"search": "Search"
 	    	}
 	    },
-	    currentSelectedSuggestion: 0
+	    currentSelectedSuggestion: 0,
+	    isSearchActive: false
 	  }
 	},
 	methods: {
@@ -223,6 +231,9 @@ export default {
 		},
 		toggleBlockSize: function() {
 			return this.isBlockReduced = !this.isBlockReduced
+		},
+		toggleSearch: function() {
+			return this.isSearchActive = !this.isSearchActive
 		},
 	    isActive: function(index) {
 	    	return index === this.currentSelectedSuggestion
@@ -340,6 +351,7 @@ export default {
 
 	.airport__language {
 		margin-bottom: 10px;
+		display: inline-block;
 	}
 
 	.airport__language-selector {
@@ -357,6 +369,23 @@ export default {
 	.airport__language-selector:hover {
 		background: #F2F2F2;
 		cursor: pointer;
+	}
+
+	.airport__search-toggle {
+		display: inline-block;
+		padding: 0 10px;
+		line-height: 40px;
+		margin-left: 40px;
+		cursor: pointer;
+		/*outline: 1px solid red;*/
+	}
+
+	.airport__search-toggle--active {
+		background: #F2F2F2;
+	}
+
+	.airport__search-toggle:hover {
+		background: #F2F2F2;
 	}
 
 	.airport__info {
@@ -387,15 +416,49 @@ export default {
 	}
 
 	.airport__search {
-		/*position: absolute;*/
+		display: none;
+		position: absolute;
 		background: #FFF;
 		top: 50px;
-		/*left: 400px;*/
+		left: 50%;
+		transform: translate(-50%, 0);
 		z-index: 9999;
+		padding: 10px 20px;
+		border: 3px solid blue;
+		max-width: 400px;
+		animation: fadeInFromNone .3s ease-out;
 		/*padding: 20px 20px 20px 0;*/
-		padding-left: 10px;
-		min-width: 400px;
-		margin-bottom: 20px;
+		/*padding-left: 10px;*/
+		/*min-width: 400px;*/
+		/*margin-bottom: 20px;*/
+	}
+
+	.airport__search--active {
+		display: block;
+		animation: fadeInFromNone .3s ease-out;
+		/*opacity: 1;*/
+		/*transition: max-width .3s ease;*/
+	}
+
+	@-webkit-keyframes fadeInFromNone {
+	    0% {
+	        display: none;
+	        opacity: 0;
+	    }
+
+	    1% {
+	        display: block;
+	        opacity: 0;
+	    }
+
+	    100% {
+	        display: block;
+	        opacity: 1;
+	    }
+	}
+
+	.airport__search-wrapper {
+		box-sizing: border-box;
 	}
 
 	.airport__search-header {
@@ -406,6 +469,7 @@ export default {
 		border: 2px solid #F2F2F2;
 		font-size: 36px;
 		height: 36px;
+		box-sizing: border-box;
 	}
 
 	.airport__search-input:focus {
@@ -417,13 +481,14 @@ export default {
 	}
 
 	.airport__search-list {
-
+		width: 400px;
 	}
 
 	.airport__search-list-item {
 		display: block;
 		margin-left: 0;
 		padding: 10px 10px;
+		margin: 0;
 		border-bottom: 1px solid #F2F2F2;
 		cursor: pointer;
 	}
