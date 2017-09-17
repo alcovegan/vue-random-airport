@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import { EventBus } from '@/eventbus'
 import airports from '../airports'
 
@@ -154,6 +154,9 @@ export default {
 			this.airportResults = [];
 			this.$router.push({ name: 'airport', params: { code: code }})
 			this.getAirport();
+			this.airportQuery = '';
+			this.airportResults = '';
+			this.currentSelectedSuggestion = 0;
 		},
 		findAirport: function() {
 			this.airportResults = airports.filter(airport => {
@@ -178,13 +181,9 @@ export default {
 				}
 			})
 
-			if(this.airportResults.length <= 1) {
+			if(this.airportResults.length === 1) {
 				this.currentSelectedSuggestion = 0
 			}
-
-			// if(this.currentSelectedSuggestion > this.airportResults - 1) {
-			// 	return this.currentSelectedSuggestion = this.airportResults - 1
-			// }
 		},
 		changeLanguage: function(langCode) {
 			console.log(langCode);
@@ -228,6 +227,9 @@ export default {
 
 			this.$router.push({ name: 'airport', params: { code: selectedCode }});
 			this.getAirport();
+			this.airportQuery = '';
+			this.airportResults = '';
+			this.currentSelectedSuggestion = 0;
 		},
 		toggleBlockSize: function() {
 			return this.isBlockReduced = !this.isBlockReduced
