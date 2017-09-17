@@ -6,46 +6,53 @@
       </div>
     </div>
 	<div class="airport">
-		<div class="airport__language">
-			<div @click="changeLanguage('ru')" class="airport__language-selector" :class="{ 'airport__language-selector--selected': selectedLanguage('ru') }">RU</div>
-			<div @click="changeLanguage('en')" class="airport__language-selector" :class="{ 'airport__language-selector--selected': selectedLanguage('en') }">EN</div>
-		</div>
-		<div class="airport__info">
-			<div class="airport__info-header">{{ i18n[language].informationHeader }}:</div>
-			<ul class="airport__info-list">
-				<li><b>{{ i18n[language].name }}</b>: {{ airportName }}</li>
-				<li><b>{{ i18n[language].country }}</b>: {{ airportCountry }}</li>
-				<li><b>{{ i18n[language].city }}</b>: {{ airportCityName }}</li>
-				<li><b>{{ i18n[language].iata }}:</b> {{ iata }}</li>
-				<li v-if="website"><b>{{ i18n[language].website }}:</b> <a :href="website">{{ website }}</a></li>
-				<li v-if="airportInfo.terminals > 0"><b>{{ i18n[language].terminalsCount }}:</b> {{ airportInfo.terminals }}</a></li>
-				<li v-if="airportInfo.year_open > 0"><b>{{ i18n[language].yearOpened }}:</b> {{ airportInfo.year_open }}</a></li>
-				<li v-if="airportInfo.runway.length !== null"><b>{{ i18n[language].runwayLength }}:</b> {{ airportInfo.runway.length }}</a></li>
-				<li v-if="airportInfo.runway.elevation !== null"><b>{{ i18n[language].runwayElevation }}:</b> {{ airportInfo.runway.elevation }}</a></li>
-				<li v-if="airportInfo.contacts.post_address"><b>{{ i18n[language].postAddress }}:</b> {{ airportInfo.contacts.post_address }}</a></li>
-				<li v-if="airportInfo.contacts.email"><b>{{ i18n[language].email }}:</b> {{ airportInfo.contacts.email }}</a></li>
-				<li v-if="airportInfo.contacts.phone"><b>{{ i18n[language].directionPhone }}:</b> {{ airportInfo.contacts.phone }}</a></li>
-				<li v-if="airportInfo.contacts.support_phone"><b>{{ i18n[language].supportPhone }}:</b> {{ airportInfo.contacts.support_phone }}</a></li>
-				<li v-if="airportInfo.contacts.fax"><b>{{ i18n[language].fax }}:</b> {{ airportInfo.contacts.fax }}</a></li>
-				<li v-if="airportInfo.base_airlines"><b>{{ i18n[language].baseAirlines }}:</b> {{ baseAirlines }}</a></li>
-			</ul>
-		</div>
-		<div class="airport__search">
-			<div class="airport__search-header">{{ i18n[language].searchHeader }}:</div>
-			<input class="airport__search-input" type="text" @input="findAirport" v-model="airportQuery">
-
-			<div class="airport__search-results">
-				<ul class="airport__search-list">
-					<li class="airport__search-list-item" v-for="airport in airportResults" @click="searchResultClicked(airport.code)">
-						{{ searchResults(airport) }} - <span style="text-decoration: underline;">{{ airport.code }}</span>
-					</li>
+		<div class="airport__wrapper" :class="{ 'airport__wrapper--reduced': isBlockReduced }">
+			<div class="airport__language">
+				<div @click="changeLanguage('ru')" class="airport__language-selector" :class="{ 'airport__language-selector--selected': selectedLanguage('ru') }">RU</div>
+				<div @click="changeLanguage('en')" class="airport__language-selector" :class="{ 'airport__language-selector--selected': selectedLanguage('en') }">EN</div>
+			</div>
+			<div class="airport__info">
+				<div class="airport__info-header">{{ i18n[language].informationHeader }}:</div>
+				<ul class="airport__info-list">
+					<li><b>{{ i18n[language].name }}</b>: {{ airportName }}</li>
+					<li><b>{{ i18n[language].country }}</b>: {{ airportCountry }}</li>
+					<li><b>{{ i18n[language].city }}</b>: {{ airportCityName }}</li>
+					<li><b>{{ i18n[language].iata }}:</b> {{ iata }}</li>
+					<li v-if="website"><b>{{ i18n[language].website }}:</b> <a :href="website">{{ website }}</a></li>
+					<li v-if="airportInfo.terminals > 0"><b>{{ i18n[language].terminalsCount }}:</b> {{ airportInfo.terminals }}</a></li>
+					<li v-if="airportInfo.year_open > 0"><b>{{ i18n[language].yearOpened }}:</b> {{ airportInfo.year_open }}</a></li>
+					<li v-if="airportInfo.runway.length !== null"><b>{{ i18n[language].runwayLength }}:</b> {{ airportInfo.runway.length }}</a></li>
+					<li v-if="airportInfo.runway.elevation !== null"><b>{{ i18n[language].runwayElevation }}:</b> {{ airportInfo.runway.elevation }}</a></li>
+					<li v-if="airportInfo.contacts.post_address"><b>{{ i18n[language].postAddress }}:</b> {{ airportInfo.contacts.post_address }}</a></li>
+					<li v-if="airportInfo.contacts.email"><b>{{ i18n[language].email }}:</b> {{ airportInfo.contacts.email }}</a></li>
+					<li v-if="airportInfo.contacts.phone"><b>{{ i18n[language].directionPhone }}:</b> {{ airportInfo.contacts.phone }}</a></li>
+					<li v-if="airportInfo.contacts.support_phone"><b>{{ i18n[language].supportPhone }}:</b> {{ airportInfo.contacts.support_phone }}</a></li>
+					<li v-if="airportInfo.contacts.fax"><b>{{ i18n[language].fax }}:</b> {{ airportInfo.contacts.fax }}</a></li>
+					<li v-if="airportInfo.base_airlines.length > 0"><b>{{ i18n[language].baseAirlines }}:</b> {{ baseAirlines }}</a></li>
 				</ul>
 			</div>
+			<div class="airport__search">
+				<div class="airport__search-header">{{ i18n[language].searchHeader }}:</div>
+				<input class="airport__search-input" type="text" @input="findAirport" @keyup.down="keyDown" @keyup.up="keyUp" @keyup.enter="keyEnter" v-model="airportQuery">
+
+				<div class="airport__search-results">
+					<ul class="airport__search-list">
+						<li class="airport__search-list-item" v-for="(airport, index) in airportResults" @click="searchResultClicked(airport.code)" :class="{'airport__search-list-item--active': isActive(index)}">
+							{{ searchResults(airport) }} - <span style="text-decoration: underline;">{{ airport.code }}</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="airport__toggle" @click="toggleBlockSize">
+			<a class="airport__toggle-switch">
+				{{ toggleButtonText }}
+			</a>
 		</div>
 	</div>
 	<gmap-map
 		:center="center"
-		:zoom="15"
+		:zoom="14"
 		map-type-id="satellite"
 		style="width: 100%; height: 100vh"
 	>
@@ -63,8 +70,9 @@ export default {
 	  return {
 	  	airportQuery: null,
 	  	airportResults: [],
+		airportInfo: {},
+		isBlockReduced: false,
 	    center: {},
-	    airportInfo: {},
 	    name: '',
 	    country: '',
 	    city: '',
@@ -90,7 +98,9 @@ export default {
 				"directionPhone": "Телефон дирекции",
 				"supportPhone": "Телефон поддержки",
 				"fax": "Факс",
-				"baseAirlines": "Базовые авиалинии"
+				"baseAirlines": "Базовые авиалинии",
+				"toggleButtonReduce": "Свернуть",
+				"toggleButtonExtend": "Развернуть"
 	    	},
 	    	"en": {
 	    		"randomButton": "Get random airport!",
@@ -110,9 +120,12 @@ export default {
 				"directionPhone": "Direction phone",
 				"supportPhone": "Support phone",
 				"fax": "Fax",
-				"baseAirlines": "Base airlines"
+				"baseAirlines": "Base airlines",
+				"toggleButtonReduce": "Reduce size",
+				"toggleButtonExtend": "Extend"
 	    	}
-	    }
+	    },
+	    currentSelectedSuggestion: 0
 	  }
 	},
 	methods: {
@@ -137,6 +150,7 @@ export default {
 		findAirport: function() {
 			this.airportResults = airports.filter(airport => {
 				if(this.airportQuery === '') {
+					this.currentSelectedSuggestion = 0;
 					return false
 				}
 				if(airport.code.startsWith(this.airportQuery.toUpperCase())) {
@@ -148,6 +162,10 @@ export default {
 				}
 
 				if(airport.name_translations.ru !== undefined && airport.name_translations.ru.toLowerCase().includes(this.airportQuery.toLowerCase())) {
+					return airport
+				}
+
+				if(airport.reserve.airport_name_rus.length > 0 && airport.reserve.airport_name_rus[0].toLowerCase().includes(this.airportQuery.toLowerCase())) {
 					return airport
 				}
 			})
@@ -173,8 +191,29 @@ export default {
 
 			return this.language === 'en'
 				? airport.name
-				: airportNameRU
-		}
+				: `${airportNameRU} (${airport.name})`
+		},
+		keyDown: function() {
+	        if(this.currentSelectedSuggestion < this.airportResults.length - 1) {
+	        	this.currentSelectedSuggestion++;
+	        }
+		},
+		keyUp: function() {
+	        if(this.currentSelectedSuggestion > 0)
+	            this.currentSelectedSuggestion--;
+		},
+		keyEnter: function() {
+			const selectedCode = this.airportResults[this.currentSelectedSuggestion].code;
+
+			this.$router.push({ name: 'airport', params: { code: selectedCode }});
+			this.getAirport();
+		},
+		toggleBlockSize: function() {
+			return this.isBlockReduced = !this.isBlockReduced
+		},
+	    isActive: function(index) {
+	    	return index === this.currentSelectedSuggestion
+	    }
 	},
 	created: function() {
 		this.getLanguage();
@@ -197,7 +236,25 @@ export default {
 				: this.airportInfo.city.name.ru || this.airportInfo.city.name.en
 		},
 		baseAirlines: function() {
-			return this.airportInfo.base_airlines.map(ap => ap).join(', ')
+			// return this.airportInfo.base_airlines.map(ap => ap).join(', ')
+			const splitRuFromEn = this.airportInfo.base_airlines.map(ap => ap.split(' (').map(spltd => spltd.replace(')', '')))
+
+			if(this.language !== 'ru' && this.airportInfo.country.code !== 'RU') {
+				return splitRuFromEn.map(airline => airline[0]).join(', ')
+			} else if(this.language === 'ru' && this.airportInfo.country.code === 'RU') {
+				return splitRuFromEn.map(airline => airline[0]).join(', ')
+			} else if(this.language !== 'ru' && this.airportInfo.country.code === 'RU') {
+				return splitRuFromEn.map(airline => airline[1]).join(', ')
+			} else if(this.language === 'ru' && this.airportInfo.country.code !== 'RU') {
+				return splitRuFromEn.map(airline => airline[1]).join(', ')
+			}
+			// const replaceAnyBrackets = splitRuFromEn.map(spltd => spltd)
+			// return splitRuFromEn
+		},
+		toggleButtonText: function() {
+			return this.isBlockReduced
+				? this.i18n[this.language].toggleButtonExtend
+				: this.i18n[this.language].toggleButtonReduce
 		}
 	}
 	// watch: {
@@ -215,12 +272,12 @@ export default {
 	  cursor: pointer;
 	  position: absolute;
 	  top: 50px;
-	  right: 20px;
+	  right: 10px;
 	  background: #FFF;
 	  z-index: 9999;
 	  display: block;
 	  height: 50px;
-	  width: 150px;
+	  width: 200px;
 	  padding: 20px;
 	  display: flex;
 	  justify-content: center;
@@ -248,11 +305,24 @@ export default {
 		text-align: left;
 		position: absolute;
 		top: 50px;
-		left: 50px;
+		left: 10px;
+		max-width: 400px;
 		z-index: 9999;
 		background: #FFF;
 		padding: 20px 20px;
 		border: 3px solid blue;
+	}
+
+	.airport__wrapper {
+		height: auto;
+		max-height: 700px;
+		overflow: hidden;
+		transition: max-height .3s ease;
+	}
+
+	.airport__wrapper--reduced {
+		max-height: 85px;
+		transition: max-height .3s ease;
 	}
 
 	.airport__language {
@@ -312,10 +382,7 @@ export default {
 		/*padding: 20px 20px 20px 0;*/
 		padding-left: 10px;
 		min-width: 400px;
-	}
-
-	.ais-results {
-		background: #FFF;
+		margin-bottom: 20px;
 	}
 
 	.airport__search-header {
@@ -332,6 +399,10 @@ export default {
 		background: #F2F2F2;
 	}
 
+	.airport__search-results {
+		overflow: auto;
+	}
+
 	.airport__search-list {
 
 	}
@@ -344,8 +415,34 @@ export default {
 		cursor: pointer;
 	}
 
+	.airport__search-list-item--active {
+		background: #42b983;
+		color: #FFF;
+	}
+
+	.airport__search-list-item--active:hover {
+		color: #2c3e50;
+	}
+
 	.airport__search-list-item:hover {
 		background: #F2F2F2;
 	}
+
+	.airport__toggle {
+		text-align: center;
+		font-size: 0.857rem;
+		/*padding-top: 20px;*/
+		cursor: pointer;
+		height: 40px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.airport__toggle-switch {
+		text-transform: uppercase;
+		color: blue;
+	}
+
 
 </style>
