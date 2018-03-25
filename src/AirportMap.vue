@@ -41,7 +41,7 @@
 			</a>
 		</div>
 	</div>
-	<div class="airport__search" :class="{ 'airport__search--active': isSearchActive }">
+	<div class="airport__search" :class="{ 'airport__search--active': isSearchActive }" @keyup.esc="toggleSearch">
 		<div class="airport__search-wrapper">
 			<div class="airport__search-header">{{ i18n[language].searchHeader }}:</div>
 			<input class="airport__search-input" type="text" @input="findAirport" @keyup.down="keyDown" @keyup.up="keyUp" @keyup.enter="keyEnter" v-model="airportQuery">
