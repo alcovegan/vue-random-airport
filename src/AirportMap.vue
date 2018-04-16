@@ -66,7 +66,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
 import { EventBus } from '@/eventbus'
 import airports from '../airports'
 

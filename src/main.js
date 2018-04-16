@@ -4,13 +4,11 @@ import App from '@/App.vue'
 import AirportMap from '@/AirportMap.vue'
 import * as VueGoogleMaps from 'vue2-google-maps'
 import airports from '../airports';
-import InstantSearch from 'vue-instantsearch';
-
-Vue.use(InstantSearch);
 
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
 const getRandomAirport = () => {
+	console.log('airports.length', airports.length);
 	const randomNum = getRandomInt(0, 569);
 	const randomAirport = airports[randomNum];
 
@@ -49,14 +47,6 @@ const router = new VueRouter({
 	mode: 'history',
 	routes
 })
-
-// router.beforeEach((to, from, next) => {
-// 	console.log('from', from)
-// 	console.log('to', to)
-
-
-// 	next();
-// });
 
 new Vue({
   el: '#app',

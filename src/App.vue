@@ -21,9 +21,6 @@ export default {
     getRandomAirport: function() {
       EventBus.$emit('random-airport', 0);
     }
-  },
-  created () {
-    // this.getRandomAirport()
   }
 }
 </script>
